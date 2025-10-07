@@ -1,34 +1,30 @@
 /*
-Copyright © 2025 NAME HERE <EMAIL ADDRESS>
-
+Copyright © 2025 Sottiki
 */
 package cmd
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
 )
 
-
+const version = "0.1.0"
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "docketpunch",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
+	Use:   "docket",
+	Short: "タスクにパンチ！",
+	Long: `docketpunch - レトロなパンチカードをイメージしたタスク管理CLIツール
+	
+command & Enterで、タスクを完了するたびに、まるでチケットにパンチするように`,
+	Run: func(cmd *cobra.Command, args []string) {
+		showWelcome()
+	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	err := rootCmd.Execute()
 	if err != nil {
@@ -37,15 +33,29 @@ func Execute() {
 }
 
 func init() {
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
+	// --version フラグを追加
+	rootCmd.Flags().BoolP("version", "v", false, "バージョンを表示")
 
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.docketpunch.yaml)")
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// --version が指定された場合の処理
+	rootCmd.PreRun = func(cmd *cobra.Command, args []string) {
+		v, _ := cmd.Flags().GetBool("version")
+		if v {
+			showWelcome()
+			os.Exit(0)
+		}
+	}
 }
 
-
+// showWelcome はウェルカメッセージを表示
+func showWelcome() {
+	fmt.Println(`
+  ╔═══════════════════╗
+  ○   DOCKET PUNCH    ║
+  ○ ───────────────── ║
+  ○ Punch your tasks! ║
+  ╚═══════════════════╝
+       v` + version + `
+`)
+	fmt.Println("使い方: docket [command]")
+	fmt.Println("コマンド一覧: docket --help")
+}

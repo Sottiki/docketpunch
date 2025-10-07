@@ -15,8 +15,6 @@ var addCmd = &cobra.Command{
 	Use:   "add [docket description]",
 	Short: "add new docket to the list",
 	Long: `add new docket to the list
-		and likely contains examples
-		and usage of using your command. 
 		For example:
 		$ docketpunch add "My new docket"`,
 	Run: func(cmd *cobra.Command, args []string) {

@@ -15,8 +15,6 @@ var listCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List all dockets",
 	Long: `List all dockets
-		and likely contains examples
-		and usage of using your command. 
 		For example:
 		$ docketpunch list`,
 	Run: func(cmd *cobra.Command, args []string) {

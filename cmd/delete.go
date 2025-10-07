@@ -15,8 +15,6 @@ var deleteCmd = &cobra.Command{
 	Use:   "delete [task ID]",
 	Short: "Delete a docket from the list",
 	Long: `Delete a docket from the list
-		and likely contains examples
-		and usage of using your command. 
 		For example:
 		$ docketpunch delete "#1"`,
 	Run: func(cmd *cobra.Command, args []string) {
