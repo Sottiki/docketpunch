@@ -11,7 +11,13 @@ type Task struct {
 	CompletedAt *time.Time `json:"completed_at,omitempty"` // 🆕 完了時刻
 }
 
-// タスクリスト全体を管理する構造体
-type Docket struct {
-	Tasks []*Task `json:"tasks"`
+// 新しいタスクを作成するコンストラクタ関数
+func NewTask(id int, description string) *Task {
+	return &Task{
+		ID:          id,
+		Description: description,
+		Done:        false,
+		CreatedAt:   time.Now(),
+		CompletedAt: nil,
+	}
 }
