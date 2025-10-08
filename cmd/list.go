@@ -1,37 +1,40 @@
 /*
-Copyright © 2025 NAME HERE <EMAIL ADDRESS>
-
+Copyright © 2025 Sottiki
 */
 package cmd
 
 import (
 	"fmt"
+	"log"
 
+	"github.com/Sottiki/docketpunch/internal/storage"
 	"github.com/spf13/cobra"
 )
 
 // listCmd represents the list command
 var listCmd = &cobra.Command{
 	Use:   "list",
-	Short: "List all dockets",
-	Long: `List all dockets
-		For example:
-		$ docketpunch list`,
+	Short: "List all tasks",
+	Long: `List all tasks in ticket format.
+	
+Example:
+  docket list`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("list called")
+		docket, err := storage.Load()
+		if err != nil {
+			log.Fatalf("Failed to load data: %v", err)
+		}
+
+		if len(docket.Tasks) == 0 {
+			fmt.Println("No tasks found")
+			return
+		}
+
+		// TODOタスクを表示する
+		fmt.Printf("タスク数: %d\n", len(docket.Tasks))
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(listCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// listCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// listCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
