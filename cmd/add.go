@@ -25,11 +25,18 @@ var addCmd = &cobra.Command{
 		docket, err := storage.Load()
 		if err != nil {
 			fmt.Println("Error loading storage:", err)
-			return
 		}
 
-		fmt.Printf("Adding task: %s\n", description)
-		fmt.Printf("Next ID will be: %d\n", docket.NextID)
+		newTask := docket.AddTask(description)
+
+		if err := storage.Save(docket); err != nil {
+			fmt.Println("Error saving storage:", err)
+		}
+
+		fmt.Printf("Added task: #%d : %s\n", newTask.ID, newTask.Description)
+		for _, t := range docket.Tasks {
+			fmt.Println(formatTaskAsTicket(t))
+		}
 	},
 }
 
