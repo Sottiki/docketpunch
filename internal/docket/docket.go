@@ -17,3 +17,10 @@ func NewDocket() *Docket {
 		NextID: 1,
 	}
 }
+
+func (d *Docket) AddTask(description string) *task.Task {
+	newTask := task.NewTask(d.NextID, description)
+	d.Tasks = append(d.Tasks, newTask)
+	d.NextID++
+	return newTask
+}

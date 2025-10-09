@@ -1,12 +1,13 @@
 /*
 Copyright © 2025 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
 import (
 	"fmt"
+	"strings"
 
+	"github.com/Sottiki/docketpunch/internal/storage"
 	"github.com/spf13/cobra"
 )
 
@@ -17,8 +18,25 @@ var addCmd = &cobra.Command{
 	Long: `add new docket to the list
 		For example:
 		$ docketpunch add "My new docket"`,
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("add called")
+		description := strings.Join(args, " ")
+
+		docket, err := storage.Load()
+		if err != nil {
+			fmt.Println("Error loading storage:", err)
+		}
+
+		newTask := docket.AddTask(description)
+
+		if err := storage.Save(docket); err != nil {
+			fmt.Println("Error saving storage:", err)
+		}
+
+		fmt.Printf("Added task: #%d : %s\n", newTask.ID, newTask.Description)
+		for _, t := range docket.Tasks {
+			fmt.Println(formatTaskAsTicket(t))
+		}
 	},
 }
 
