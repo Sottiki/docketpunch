@@ -5,6 +5,8 @@ package cmd
 
 import (
 	"fmt"
+	"log"
+	"strconv"
 
 	"github.com/spf13/cobra"
 )
@@ -16,8 +18,21 @@ var punchCmd = &cobra.Command{
 	Long: `punch a task by its ID
 		For example:
 		$ docket punch "#1"`,
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("punch called")
+
+		taskID, err := strconv.Atoi(args[0])
+		if err != nil {
+			log.Fatalf("Invalid task ID: %s", args[0])
+		}
+
+		// docket, err := storage.Load()
+		// if err != nil {
+		// 	log.Fatalf("Failed to load data: %v", err)
+		// }
+
+		fmt.Printf("Punching task #%d...\n", taskID)
 	},
 }
 

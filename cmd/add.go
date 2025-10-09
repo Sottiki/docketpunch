@@ -5,6 +5,7 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/Sottiki/docketpunch/internal/storage"
@@ -24,13 +25,13 @@ var addCmd = &cobra.Command{
 
 		docket, err := storage.Load()
 		if err != nil {
-			fmt.Println("Error loading storage:", err)
+			log.Fatalf("Failed to load data: %v", err)
 		}
 
 		newTask := docket.AddTask(description)
 
 		if err := storage.Save(docket); err != nil {
-			fmt.Println("Error saving storage:", err)
+			log.Fatalf("Error saving storage:", err)
 		}
 
 		fmt.Printf("Added task: #%d : %s\n", newTask.ID, newTask.Description)
