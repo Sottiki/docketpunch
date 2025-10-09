@@ -1,37 +1,62 @@
 /*
-Copyright © 2025 NAME HERE <EMAIL ADDRESS>
-
+Copyright © 2025 Sottiki
 */
 package cmd
 
 import (
 	"fmt"
+	"log"
 
+	"github.com/Sottiki/docketpunch/internal/storage"
+	"github.com/Sottiki/docketpunch/internal/task"
 	"github.com/spf13/cobra"
 )
 
 // listCmd represents the list command
 var listCmd = &cobra.Command{
 	Use:   "list",
-	Short: "List all dockets",
-	Long: `List all dockets
-		For example:
-		$ docketpunch list`,
+	Short: "List all tasks",
+	Long: `List all tasks in ticket format.
+	
+Example:
+  docket list`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("list called")
+		docket, err := storage.Load()
+		if err != nil {
+			log.Fatalf("Failed to load data: %v", err)
+		}
+
+		if len(docket.Tasks) == 0 {
+			fmt.Println("No tasks found")
+			return
+		}
+
+		for _, t := range docket.Tasks {
+			fmt.Println(formatTaskAsTicket(t))
+		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(listCmd)
+}
 
-	// Here you will define your flags and configuration settings.
+// タスクをチケット形式で表示する
+func formatTaskAsTicket(t *task.Task) string {
+	statusMark := " "
+	if t.Done {
+		statusMark = "◯"
+	}
 
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// listCmd.PersistentFlags().String("foo", "", "A help for foo")
+	createDate := t.CreatedAt.Format("01/02")
 
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// listCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	var dateInfo string
+	if t.Done && t.CompletedAt != nil {
+		completeDate := t.CompletedAt.Format("01/02")
+		dateInfo = fmt.Sprintf("(%s→%s)", createDate, completeDate)
+	} else {
+		dateInfo = fmt.Sprintf("(%s→)", createDate)
+	}
+	return fmt.Sprintf("[ %s|#%d|%s %s]", statusMark, t.ID, t.Description, dateInfo)
+
 }
