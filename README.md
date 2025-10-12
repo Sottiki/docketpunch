@@ -33,7 +33,18 @@ go install github.com/Sottiki/docketpunch@latest
 
 ## ⚡ エイリアス設定（推奨）
 
-より快適に使うため、エイリアスの設定をおすすめします。
+インストール直後は `docketpunch` コマンドで使用しますが、より快適に使うためエイリアスの設定をおすすめします。
+
+**設定前:**
+```bash
+docketpunch list  # 長い...
+```
+
+**設定後:**
+```bash
+docket list  # 短くて便利！
+dkt list     # さらに短く！
+```
 
 ### zsh の場合
 
@@ -53,7 +64,7 @@ alias docket='docketpunch'
 alias dkt='docketpunch'
 ```
 
-設定後、以下で反映：
+### 設定を反映
 
 ```bash
 # zsh の場合
@@ -62,6 +73,8 @@ source ~/.zshrc
 # bash の場合
 source ~/.bashrc
 ```
+
+以降、このREADMEでは短縮形の `docket` を使用して説明します。
 
 ## 🚀 使い方
 
