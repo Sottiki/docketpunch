@@ -10,7 +10,8 @@
 
 # Built binaries
 /docket
-
+/docketpunch
+/dkt
 
 # Test binary, built with `go test -c`
 *.test
@@ -30,6 +31,12 @@ go.work.sum
 
 # env file
 .env
+
+# Test data
+.docket/
+
+# macOS
+.DS_Store
 
 # Editor/IDE
 # .idea/
