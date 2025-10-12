@@ -1,23 +1,42 @@
 /*
 Copyright © 2025 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
 import (
 	"fmt"
+	"log"
 
+	"github.com/Sottiki/docketpunch/internal/storage"
 	"github.com/spf13/cobra"
 )
 
 // clearCmd represents the clear command
 var clearCmd = &cobra.Command{
 	Use:   "clear",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-a`,
+	Short: "clear all dockets",
+	Long: `Delete all completed tasks from the docket permanently.
+		Incomplete tasks will remain.
+		$ docket clear`,
+	Args: cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("clear called")
+		docket, err := storage.Load()
+		if err != nil {
+			log.Fatalf("Failed to load data: %v\n", err)
+		}
+
+		deletedTasks := docket.ClearCompletedTasks()
+		if len(deletedTasks) == 0 {
+			fmt.Println("No completed tasks to clear.")
+			return
+		}
+		if err := storage.Save(docket); err != nil {
+			log.Fatalf("Failed to save data: %v", err)
+		}
+		fmt.Printf("✓ Cleared %d completed tasks:\n", len(deletedTasks))
+		for _, t := range docket.Tasks {
+			fmt.Println(formatTaskAsTicket(t))
+		}
 	},
 }
 

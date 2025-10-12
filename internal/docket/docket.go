@@ -59,3 +59,19 @@ func (d *Docket) DeleteTask(id int) (*task.Task, bool) {
 	}
 	return nil, false
 }
+
+func (d *Docket) ClearCompletedTasks() []*task.Task {
+	var deletedTasks []*task.Task
+	var remainingTasks []*task.Task
+
+	for _, t := range d.Tasks {
+		if t.Done {
+			deletedTasks = append(deletedTasks, t)
+		} else {
+			remainingTasks = append(remainingTasks, t)
+		}
+	}
+
+	d.Tasks = remainingTasks
+	return deletedTasks
+}
