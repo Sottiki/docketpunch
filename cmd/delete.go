@@ -1,14 +1,12 @@
 /*
 Copyright © 2025 NAME HERE <EMAIL ADDRESS>
+
 */
 package cmd
 
 import (
 	"fmt"
-	"log"
-	"strconv"
 
-	"github.com/Sottiki/docketpunch/internal/storage"
 	"github.com/spf13/cobra"
 )
 
@@ -18,29 +16,9 @@ var deleteCmd = &cobra.Command{
 	Short: "Delete a docket from the list",
 	Long: `Delete a docket from the list
 		For example:
-		$ docketpunch delete "1"`,
-	Args: cobra.ExactArgs(1),
+		$ docketpunch delete "#1"`,
 	Run: func(cmd *cobra.Command, args []string) {
-		taskID, err := strconv.Atoi(args[0])
-		if err != nil {
-			log.Fatalf("Invalid task ID: %s\n", args[0])
-		}
-
-		docket, err := storage.Load()
-		if err != nil {
-			log.Fatalf("Failed to load data: %v\n", err)
-		}
-
-		deletedTask, success := docket.DeleteTask(taskID)
-		if !success {
-			fmt.Printf("Task #%d not found\n", taskID)
-			return
-		}
-
-		if err := storage.Save(docket); err != nil {
-			log.Fatal("Failed to save data:", err)
-		}
-		fmt.Printf("✓ Deleted task #%d: %s\n", deletedTask.ID, deletedTask.Description)
+		fmt.Println("delete called")
 	},
 }
 

@@ -40,22 +40,11 @@ func (d *Docket) PunchTask(id int) (*task.Task, bool) {
 }
 
 func (d *Docket) GetLatestIncompleteTask() *task.Task {
+	// 後ろから探索（最新タスクが後ろにあるため効率的）
 	for i := len(d.Tasks) - 1; i >= 0; i-- {
 		if !d.Tasks[i].Done {
 			return d.Tasks[i]
 		}
 	}
 	return nil
-}
-
-func (d *Docket) DeleteTask(id int) (*task.Task, bool) {
-	for i, t := range d.Tasks {
-		if t.ID == id {
-			// タスクを削除
-			deletedTask := t
-			d.Tasks = append(d.Tasks[:i], d.Tasks[i+1:]...)
-			return deletedTask, true
-		}
-	}
-	return nil, false
 }
