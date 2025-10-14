@@ -1,0 +1,65 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build and Release for Linux
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+
+      - name: Run tests
+        run: go test ./... -v
+
+      - name: Build for Linux amd64
+        run: |
+          GOOS=linux GOARCH=amd64 go build -o docketpunch-linux-amd64
+          chmod +x docketpunch-linux-amd64
+
+      - name: Build for Linux arm64
+        run: |
+          GOOS=linux GOARCH=arm64 go build -o docketpunch-linux-arm64
+          chmod +x docketpunch-linux-arm64
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            docketpunch-linux-amd64
+            docketpunch-linux-arm64
+          body: |
+            ## Installation (Linux)
+            
+            ### amd64 (Intel/AMD)
+            ```bash
+            curl -L https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/docketpunch-linux-amd64 -o docketpunch
+            chmod +x docketpunch
+            sudo mv docketpunch /usr/local/bin/
+            ```
+            
+            ### arm64 (ARM)
+            ```bash
+            curl -L https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/docketpunch-linux-arm64 -o docketpunch
+            chmod +x docketpunch
+            sudo mv docketpunch /usr/local/bin/
+            ```
+            
+            Or use `go install`:
+            ```bash
+            go install github.com/${{ github.repository }}@${{ github.ref_name }}
+            ```
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

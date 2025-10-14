@@ -25,8 +25,28 @@ CLIタスク管理ツール - パンチカードのように、タスクに穴�
 
 ## 📦 インストール
 
+### 方法1: Go install（Go がインストールされている場合）
+
 ```bash
 go install github.com/Sottiki/docketpunch@latest
+```
+
+### 方法2: ビルド済みバイナリ（Linux）
+
+#### Linux (amd64 - Intel/AMD)
+
+```bash
+curl -L https://github.com/Sottiki/docketpunch/releases/latest/download/docketpunch-linux-amd64 -o docketpunch
+chmod +x docketpunch
+sudo mv docketpunch /usr/local/bin/
+```
+
+#### Linux (arm64 - ARM)
+
+```bash
+curl -L https://github.com/Sottiki/docketpunch/releases/latest/download/docketpunch-linux-arm64 -o docketpunch
+chmod +x docketpunch
+sudo mv docketpunch /usr/local/bin/
 ```
 
 インストール後、`docketpunch` コマンドが使えるようになります。

@@ -31,7 +31,7 @@ var addCmd = &cobra.Command{
 		newTask := docket.AddTask(description)
 
 		if err := storage.Save(docket); err != nil {
-			log.Fatalf("Error saving storage:", err)
+			log.Fatalf("Error saving storage: %v", err)
 		}
 
 		fmt.Printf("Added task: #%d : %s\n", newTask.ID, newTask.Description)

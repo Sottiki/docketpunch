@@ -48,13 +48,14 @@ func init() {
 
 // showWelcome はウェルカメッセージを表示
 func showWelcome() {
-	fmt.Println(`
+	fmt.Print(`
   ╔═══════════════════╗
   ○   DOCKET PUNCH    ║
   ○ ───────────────── ║
   ○ Punch your tasks! ║
   ╚═══════════════════╝
        v` + version + `
+
 `)
 	fmt.Println("使い方: docket [command]")
 	fmt.Println("コマンド一覧: docket --help")
