@@ -2,7 +2,7 @@
 
 [![Go Version](https://img.shields.io/badge/Go-1.23+-00ADD8?style=flat&logo=go)](https://go.dev/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Build Status](https://github.com/Sottiki/docketpunch/workflows/CI/badge.svg)](https://github.com/Sottiki/docketpunch/actions)
+[![Release](https://github.com/Sottiki/docketpunch/actions/workflows/release.yml/badge.svg)](https://github.com/Sottiki/docketpunch/actions/workflows/release.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/Sottiki/docketpunch)](https://goreportcard.com/report/github.com/Sottiki/docketpunch)
 
 **A CLI task management tool - Punch your tasks to completion!**  
