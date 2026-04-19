@@ -66,6 +66,10 @@ var punchCmd = &cobra.Command{
 		} else {
 			fmt.Printf("✓ Punched task #%d: %s\n", punchedTask.ID, punchedTask.Description)
 		}
+
+		for _, t := range docket.Tasks {
+			fmt.Println(formatTaskAsTicket(t))
+		}
 	},
 }
 
