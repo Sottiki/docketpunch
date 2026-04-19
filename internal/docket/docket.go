@@ -60,6 +60,17 @@ func (d *Docket) DeleteTask(id int) (*task.Task, bool) {
 	return nil, false
 }
 
+// ResetDocket は全タスクを削除し NextID を 1 にリセットする (clear コマンド用)
+func (d *Docket) ResetDocket() {
+	d.Tasks = []*task.Task{}
+	d.NextID = 1
+}
+
+// DeleteAllTasks は全タスクを削除する。NextID は維持する (delete --all 用)
+func (d *Docket) DeleteAllTasks() {
+	d.Tasks = []*task.Task{}
+}
+
 func (d *Docket) ClearCompletedTasks() []*task.Task {
 	var deletedTasks []*task.Task
 	var remainingTasks []*task.Task

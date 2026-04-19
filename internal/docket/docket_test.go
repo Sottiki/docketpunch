@@ -237,3 +237,75 @@ func TestDocket_ClearCompletedTasks_NoCompletedTasks(t *testing.T) {
 		t.Errorf("Tasks length = %d, want 2", len(d.Tasks))
 	}
 }
+
+func TestDocket_ResetDocket(t *testing.T) {
+	d := NewDocket()
+	d.AddTask("Task 1")
+	d.AddTask("Task 2")
+	d.AddTask("Task 3")
+
+	d.ResetDocket()
+
+	if len(d.Tasks) != 0 {
+		t.Errorf("After ResetDocket, Tasks length = %d, want 0", len(d.Tasks))
+	}
+
+	if d.NextID != 1 {
+		t.Errorf("After ResetDocket, NextID = %d, want 1", d.NextID)
+	}
+
+	// リセット後に追加したタスクが ID=1 から再採番されることを確認
+	newTask := d.AddTask("新タスク")
+	if newTask.ID != 1 {
+		t.Errorf("After ResetDocket, first new task ID = %d, want 1", newTask.ID)
+	}
+}
+
+func TestDocket_ResetDocket_Empty(t *testing.T) {
+	d := NewDocket()
+
+	d.ResetDocket()
+
+	if len(d.Tasks) != 0 {
+		t.Errorf("ResetDocket on empty docket: Tasks length = %d, want 0", len(d.Tasks))
+	}
+
+	if d.NextID != 1 {
+		t.Errorf("ResetDocket on empty docket: NextID = %d, want 1", d.NextID)
+	}
+}
+
+func TestDocket_DeleteAllTasks(t *testing.T) {
+	d := NewDocket()
+	d.AddTask("Task 1")
+	d.AddTask("Task 2")
+	d.AddTask("Task 3")
+
+	expectedNextID := d.NextID // 4
+
+	d.DeleteAllTasks()
+
+	if len(d.Tasks) != 0 {
+		t.Errorf("After DeleteAllTasks, Tasks length = %d, want 0", len(d.Tasks))
+	}
+
+	if d.NextID != expectedNextID {
+		t.Errorf("After DeleteAllTasks, NextID = %d, want %d (should not reset)", d.NextID, expectedNextID)
+	}
+
+	// 削除後に追加したタスクが連番継続されることを確認
+	newTask := d.AddTask("継続タスク")
+	if newTask.ID != expectedNextID {
+		t.Errorf("After DeleteAllTasks, next task ID = %d, want %d", newTask.ID, expectedNextID)
+	}
+}
+
+func TestDocket_DeleteAllTasks_Empty(t *testing.T) {
+	d := NewDocket()
+
+	d.DeleteAllTasks()
+
+	if len(d.Tasks) != 0 {
+		t.Errorf("DeleteAllTasks on empty docket: Tasks length = %d, want 0", len(d.Tasks))
+	}
+}
