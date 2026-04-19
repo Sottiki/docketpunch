@@ -55,7 +55,7 @@ func formatTaskAsTicket(t *task.Task) string {
 		completeDate := t.CompletedAt.Format("01/02")
 		dateInfo = fmt.Sprintf("(%s→%s)", createDate, completeDate)
 	} else {
-		dateInfo = fmt.Sprintf("(%s→)", createDate)
+		dateInfo = fmt.Sprintf("(%s)", createDate)
 	}
 	return fmt.Sprintf("[ %s|#%d|%s %s]", statusMark, t.ID, t.Description, dateInfo)
 
