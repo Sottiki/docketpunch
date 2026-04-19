@@ -1,5 +1,5 @@
 /*
-Copyright © 2025 NAME HERE <EMAIL ADDRESS>
+Copyright © 2025 Sottiki
 */
 package cmd
 
@@ -14,9 +14,8 @@ import (
 // clearCmd represents the clear command
 var clearCmd = &cobra.Command{
 	Use:   "clear",
-	Short: "clear all dockets",
-	Long: `Delete all completed tasks from the docket permanently.
-		Incomplete tasks will remain.
+	Short: "全タスクを削除して連番をリセットする",
+	Long: `全タスクを削除し、IDの連番を1からリセットします。
 		$ docket clear`,
 	Args: cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -25,18 +24,12 @@ var clearCmd = &cobra.Command{
 			log.Fatalf("Failed to load data: %v\n", err)
 		}
 
-		deletedTasks := docket.ClearCompletedTasks()
-		if len(deletedTasks) == 0 {
-			fmt.Println("No completed tasks to clear.")
-			return
-		}
+		docket.ResetDocket()
+
 		if err := storage.Save(docket); err != nil {
 			log.Fatalf("Failed to save data: %v", err)
 		}
-		fmt.Printf("✓ Cleared %d completed tasks:\n", len(deletedTasks))
-		for _, t := range docket.Tasks {
-			fmt.Println(formatTaskAsTicket(t))
-		}
+		fmt.Println("✓ Cleared all tasks and reset ID counter.")
 	},
 }
 
