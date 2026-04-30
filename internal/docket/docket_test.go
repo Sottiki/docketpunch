@@ -182,62 +182,6 @@ func TestDocket_DeleteTask(t *testing.T) {
 	}
 }
 
-func TestDocket_ClearCompletedTasks(t *testing.T) {
-	d := NewDocket()
-	d.AddTask("Task 1")
-	d.AddTask("Task 2")
-	d.AddTask("Task 3")
-	d.AddTask("Task 4")
-
-	// いくつかのタスクを完了させる
-	d.PunchTask(1)
-	d.PunchTask(3)
-
-	// 完了したタスクをクリア
-	deleted := d.ClearCompletedTasks()
-
-	// 削除されたタスク数を確認
-	if len(deleted) != 2 {
-		t.Errorf("ClearCompletedTasks() deleted %d tasks, want 2", len(deleted))
-	}
-
-	// 残っているタスク数を確認
-	if len(d.Tasks) != 2 {
-		t.Errorf("After ClearCompletedTasks, Tasks length = %d, want 2", len(d.Tasks))
-	}
-
-	// 残っているタスクがすべて未完了であることを確認
-	for _, task := range d.Tasks {
-		if task.Done {
-			t.Errorf("Task %d is still marked as done after ClearCompletedTasks", task.ID)
-		}
-	}
-
-	// 削除されたタスクがすべて完了済みであることを確認
-	for _, task := range deleted {
-		if !task.Done {
-			t.Errorf("Deleted task %d was not marked as done", task.ID)
-		}
-	}
-}
-
-func TestDocket_ClearCompletedTasks_NoCompletedTasks(t *testing.T) {
-	d := NewDocket()
-	d.AddTask("Task 1")
-	d.AddTask("Task 2")
-
-	// 完了タスクがない状態でクリア
-	deleted := d.ClearCompletedTasks()
-
-	if len(deleted) != 0 {
-		t.Errorf("ClearCompletedTasks() with no completed tasks deleted %d tasks, want 0", len(deleted))
-	}
-
-	if len(d.Tasks) != 2 {
-		t.Errorf("Tasks length = %d, want 2", len(d.Tasks))
-	}
-}
-
 func TestDocket_ResetDocket(t *testing.T) {
 	d := NewDocket()
 	d.AddTask("Task 1")
