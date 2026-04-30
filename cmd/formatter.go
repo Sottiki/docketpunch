@@ -12,7 +12,7 @@ import (
 func formatTaskAsTicket(t *task.Task) string {
 	statusMark := " "
 	if t.Done {
-		statusMark = "◯"
+		statusMark = "o"
 	}
 
 	createDate := t.CreatedAt.Format("01/02")

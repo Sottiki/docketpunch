@@ -130,8 +130,8 @@ func TestPunchCmd_ShowsListAfterPunch(t *testing.T) {
 	run("add", "タスクA")
 	out := run("punch")
 
-	if !strings.Contains(out, "◯") {
-		t.Errorf("punch output should show completed mark ◯, got: %s", out)
+	if !strings.Contains(out, "o") {
+		t.Errorf("punch output should show completed mark o, got: %s", out)
 	}
 }
 
@@ -252,8 +252,8 @@ func TestFormatTaskAsTicket_Completed(t *testing.T) {
 	run("punch", "1")
 	out := run("list")
 
-	if !strings.Contains(out, "◯") {
-		t.Errorf("completed task should show ◯ mark, got: %s", out)
+	if !strings.Contains(out, "o") {
+		t.Errorf("completed task should show o mark, got: %s", out)
 	}
 	if !strings.Contains(out, "→") {
 		t.Errorf("completed task should show created→completed dates, got: %s", out)
