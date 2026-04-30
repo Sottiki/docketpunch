@@ -1,6 +1,6 @@
 # docketpunch 実装要件・TODO
 
-> 最終更新: 2026-04-20
+> 最終更新: 2026-05-01
 
 ## 完了済み TODO
 
@@ -9,13 +9,15 @@
 - [x] `clear` コマンドを JSON 完全リセットに変更（全タスク削除 + NextID=1）(PR #18)
 - [x] `delete --all` オプションを追加（全タスク削除・NextID はリセットしない）(PR #19)
 - [x] `createSampleData()` を削除・初回起動時は空の Docket で開始 (PR #20)
-- [x] 著作権ヘッダを修正（`NAME HERE <EMAIL ADDRESS>` → `Sottiki`）(PR #20)
+- [x] 著作権ヘッダを修正 (PR #20)
 - [x] `list` コマンドの未完了タスク日付表示を修正: `(01/02→)` → `(01/02)` (PR #21)
 - [x] `punch` 実行後にタスク一覧を表示 (PR #22)
 - [x] `formatTaskAsTicket` を `cmd/formatter.go` に分離 (PR #23)
 - [x] `cmd/` 統合テスト追加（18ケース） (PR #24)
-- [x] GitHub Actions CI ワークフロー追加（main PR・マージ時） (PR #25)
+- [x] GitHub Actions CI ワークフロー追加 (PR #25)
 - [x] README を最新実装に合わせて更新
+- [x] `ClearCompletedTasks` デッドコード削除 (PR #26)
+- [x] 完了マークを `◯` → `o` に変更（Windows 文字化け対応）(PR #27)
 
 ---
 
@@ -32,13 +34,15 @@
 
 ---
 
-## 次のエンハンス候補
+## エンハンス候補
+
+### 機能追加
 
 | 優先度 | 機能 | 概要 |
 |--------|------|------|
-| 中 | タスク優先度 | タスクに優先度 (high/medium/low) を付けてソート・フィルタ |
-| 中 | タスク編集 | `edit <id> <新しい説明>` コマンド |
-| 中 | フィルタ表示 | `list --done` / `list --pending` で絞り込み |
-| 低 | macOS/Windows バイナリ | CI/CD でクロスプラットフォームビルドを追加 |
+| 中 | `list --done` / `list --pending` | 完了済み・未完了でフィルタ表示 |
+| 中 | `edit <id> <新しい説明>` | タスクの説明文を編集するコマンド |
+| 中 | タスク優先度 | high/medium/low を付けてソート・フィルタ |
 | 低 | カラー出力 | ターミナルカラーで状態を視覚的に区別 |
+| 低 | macOS/Windows バイナリ | CI/CD でクロスプラットフォームビルドを追加 |
 | 低 | 複数データファイル対応 | プロジェクト別にタスクを分けて管理 |
