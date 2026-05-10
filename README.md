@@ -91,11 +91,30 @@ docket list
 ```
 [ |#1|Go言語の勉強をする (10/06)]
 [ |#2|ドキュメントを書く (10/07)]
-[◯|#3|コードレビュー (10/05→10/08)]
+[o|#3|コードレビュー (10/05→10/08)]
 ```
 
 - `[ ]` - 未完了タスク（作成日を表示）
-- `[◯]` - 完了済みタスク（作成日→完了日を表示）
+- `[o]` - 完了済みタスク（作成日→完了日を表示）
+
+#### フィルター表示
+
+```bash
+docket list --pending   # 未完了のみ
+docket list --done      # 完了済みのみ
+```
+
+### タスクの説明を編集
+
+```bash
+docket edit 1 "新しいタスク名"
+```
+
+```
+Edited task #1: 新しいタスク名
+[ |#1|新しいタスク名 (10/06)]
+[ |#2|ドキュメントを書く (10/07)]
+```
 
 ### タスクを完了（パンチ！）
 
@@ -156,6 +175,9 @@ docket clear
 |---------|------|--------|
 | `add <description>` | 新しいタスクを追加 | `docket add "タスク名"` |
 | `list` | タスク一覧をチケット形式で表示 | `docket list` |
+| `list --pending` | 未完了タスクのみ表示 | `docket list --pending` |
+| `list --done` | 完了済みタスクのみ表示 | `docket list --done` |
+| `edit <task-id> <description>` | タスクの説明文を編集 | `docket edit 1 "新しい名前"` |
 | `punch [task-id]` | タスクを完了にする<br>引数なし: 最新タスクを完了<br>引数あり: 指定IDを完了 | `docket punch`<br>`docket punch 1` |
 | `delete <task-id>` | 指定したタスクを削除 | `docket delete 2` |
 | `delete --all` | 全タスクを削除（連番継続） | `docket delete --all` |
@@ -170,6 +192,8 @@ docket clear
 - [x] `clear` コマンドの完全リセット機能（連番リセット）
 - [x] テストコードの追加（unit / integration）
 - [x] CI/CD の設定
+- [x] `list --done` / `list --pending` フィルター表示
+- [x] `edit` コマンド（タスクの説明文を編集）
 
 ## 🏗️ 技術スタック
 
@@ -185,6 +209,7 @@ docketpunch/
 │   ├── root.go
 │   ├── add.go
 │   ├── list.go
+│   ├── edit.go
 │   ├── punch.go
 │   ├── delete.go
 │   ├── clear.go
@@ -224,6 +249,3 @@ docketpunch/
 このプロジェクトは、古き良きパンチカードシステムからインスピレーションを得ています。
 タスクを完了させる爽快感を、レトロな「パンチ」という動作で表現しました。
 
----
-
-⭐ このプロジェクトが役に立ったら、スターをつけていただけると嬉しいです！
