@@ -48,6 +48,16 @@ func (d *Docket) GetLatestIncompleteTask() *task.Task {
 	return nil
 }
 
+func (d *Docket) EditTask(id int, newDescription string) (*task.Task, bool) {
+	for _, t := range d.Tasks {
+		if t.ID == id {
+			t.Description = newDescription
+			return t, true
+		}
+	}
+	return nil, false
+}
+
 func (d *Docket) DeleteTask(id int) (*task.Task, bool) {
 	for i, t := range d.Tasks {
 		if t.ID == id {

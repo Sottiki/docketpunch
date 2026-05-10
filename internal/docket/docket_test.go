@@ -182,6 +182,39 @@ func TestDocket_DeleteTask(t *testing.T) {
 	}
 }
 
+func TestDocket_EditTask(t *testing.T) {
+	d := NewDocket()
+	d.AddTask("Task 1")
+	d.AddTask("Task 2")
+
+	edited, ok := d.EditTask(1, "Updated task")
+
+	if !ok {
+		t.Fatal("EditTask(1) returned false, want true")
+	}
+
+	if edited == nil {
+		t.Fatal("EditTask(1) returned nil task")
+	}
+
+	if edited.Description != "Updated task" {
+		t.Errorf("Edited task description = %s, want %s", edited.Description, "Updated task")
+	}
+
+	if d.Tasks[0].Description != "Updated task" {
+		t.Errorf("Tasks[0].Description = %s, want %s", d.Tasks[0].Description, "Updated task")
+	}
+
+	if d.Tasks[1].Description != "Task 2" {
+		t.Errorf("Tasks[1].Description = %s, want %s (should be unchanged)", d.Tasks[1].Description, "Task 2")
+	}
+
+	_, ok = d.EditTask(999, "no such task")
+	if ok {
+		t.Error("EditTask on non-existent ID should return false")
+	}
+}
+
 func TestDocket_ResetDocket(t *testing.T) {
 	d := NewDocket()
 	d.AddTask("Task 1")
