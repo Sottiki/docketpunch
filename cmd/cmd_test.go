@@ -331,6 +331,66 @@ func TestFormatTaskAsTicket_Completed(t *testing.T) {
 	}
 }
 
+// --- edit ---
+
+func TestEditCmd_EditsDescription(t *testing.T) {
+	withTempHome(t)
+
+	run("add", "元のタスク")
+	out := run("edit", "1", "編集後のタスク")
+
+	if !strings.Contains(out, "Edited task #1") {
+		t.Errorf("edit output should contain 'Edited task #1', got: %s", out)
+	}
+	if !strings.Contains(out, "編集後のタスク") {
+		t.Errorf("edit output should contain new description, got: %s", out)
+	}
+
+	listOut := run("list")
+	if !strings.Contains(listOut, "編集後のタスク") {
+		t.Errorf("after edit, list should show new description, got: %s", listOut)
+	}
+	if strings.Contains(listOut, "元のタスク") {
+		t.Errorf("after edit, list should not show old description, got: %s", listOut)
+	}
+}
+
+func TestEditCmd_NotFound(t *testing.T) {
+	withTempHome(t)
+
+	out := run("edit", "999", "存在しない")
+
+	if !strings.Contains(out, "Task #999 not found") {
+		t.Errorf("edit on non-existent ID should show 'Task #999 not found', got: %s", out)
+	}
+}
+
+func TestEditCmd_ShowsListAfterEdit(t *testing.T) {
+	withTempHome(t)
+
+	run("add", "タスクA")
+	run("add", "タスクB")
+	out := run("edit", "1", "更新済みタスク")
+
+	if !strings.Contains(out, "#1") || !strings.Contains(out, "#2") {
+		t.Errorf("edit output should show full ticket list with #1 and #2, got: %s", out)
+	}
+	if !strings.Contains(out, "[") {
+		t.Errorf("edit output should show ticket format, got: %s", out)
+	}
+}
+
+func TestEditCmd_MultiWordDescription(t *testing.T) {
+	withTempHome(t)
+
+	run("add", "old")
+	out := run("edit", "1", "new", "multi", "word", "description")
+
+	if !strings.Contains(out, "new multi word description") {
+		t.Errorf("edit should join multi-word args with spaces, got: %s", out)
+	}
+}
+
 // --- stderr を捨てる helper（log.Fatalf による os.Exit を回避するためテストは正常系のみ） ---
 
 func init() {
