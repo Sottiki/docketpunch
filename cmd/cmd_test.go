@@ -98,6 +98,77 @@ func TestListCmd_ShowsTicketFormat(t *testing.T) {
 	}
 }
 
+func TestListCmd_DoneFlag_ShowsOnlyCompleted(t *testing.T) {
+	withTempHome(t)
+
+	run("add", "未完了タスク")
+	run("add", "完了タスク")
+	run("punch", "2")
+
+	out := run("list", "--done")
+
+	if !strings.Contains(out, "#2") {
+		t.Errorf("--done should show completed task #2, got: %s", out)
+	}
+	if strings.Contains(out, "#1") {
+		t.Errorf("--done should not show pending task #1, got: %s", out)
+	}
+}
+
+func TestListCmd_PendingFlag_ShowsOnlyPending(t *testing.T) {
+	withTempHome(t)
+
+	run("add", "未完了タスク")
+	run("add", "完了タスク")
+	run("punch", "2")
+
+	out := run("list", "--pending")
+
+	if !strings.Contains(out, "#1") {
+		t.Errorf("--pending should show pending task #1, got: %s", out)
+	}
+	if strings.Contains(out, "#2") {
+		t.Errorf("--pending should not show completed task #2, got: %s", out)
+	}
+}
+
+func TestListCmd_DoneFlag_EmptyResult(t *testing.T) {
+	withTempHome(t)
+
+	run("add", "未完了のみ")
+
+	out := run("list", "--done")
+
+	if !strings.Contains(out, "No tasks found") {
+		t.Errorf("--done with no completed tasks should show 'No tasks found', got: %s", out)
+	}
+}
+
+func TestListCmd_PendingFlag_EmptyResult(t *testing.T) {
+	withTempHome(t)
+
+	run("add", "完了のみ")
+	run("punch", "1")
+
+	out := run("list", "--pending")
+
+	if !strings.Contains(out, "No tasks found") {
+		t.Errorf("--pending with all tasks done should show 'No tasks found', got: %s", out)
+	}
+}
+
+func TestListCmd_BothFlags_Error(t *testing.T) {
+	withTempHome(t)
+
+	run("add", "タスク")
+
+	out := run("list", "--done", "--pending")
+
+	if !strings.Contains(out, "cannot use --done and --pending together") {
+		t.Errorf("using both flags should show error message, got: %s", out)
+	}
+}
+
 // --- punch ---
 
 func TestPunchCmd_NoArgs_PunchesLatest(t *testing.T) {
