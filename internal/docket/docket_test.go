@@ -24,7 +24,7 @@ func TestDocket_AddTask(t *testing.T) {
 	d := NewDocket()
 	description := "Test task"
 
-	task := d.AddTask(description)
+	task := d.AddTask(description, "")
 
 	// タスクが追加されたことを確認
 	if len(d.Tasks) != 1 {
@@ -47,7 +47,7 @@ func TestDocket_AddTask(t *testing.T) {
 	}
 
 	// 2つ目のタスクを追加
-	task2 := d.AddTask("Second task")
+	task2 := d.AddTask("Second task", "")
 	if task2.ID != 2 {
 		t.Errorf("Second task ID = %d, want 2", task2.ID)
 	}
@@ -59,8 +59,8 @@ func TestDocket_AddTask(t *testing.T) {
 
 func TestDocket_PunchTask(t *testing.T) {
 	d := NewDocket()
-	d.AddTask("Task 1")
-	d.AddTask("Task 2")
+	d.AddTask("Task 1", "")
+	d.AddTask("Task 2", "")
 
 	// タスクを完了させる
 	punchedTask, ok := d.PunchTask(1)
@@ -104,9 +104,9 @@ func TestDocket_GetLatestIncompleteTask(t *testing.T) {
 	}
 
 	// タスクを追加
-	d.AddTask("Task 1")
-	d.AddTask("Task 2")
-	d.AddTask("Task 3")
+	d.AddTask("Task 1", "")
+	d.AddTask("Task 2", "")
+	d.AddTask("Task 3", "")
 
 	// 最新の未完了タスクを取得
 	latest := d.GetLatestIncompleteTask()
@@ -144,9 +144,9 @@ func TestDocket_GetLatestIncompleteTask(t *testing.T) {
 
 func TestDocket_DeleteTask(t *testing.T) {
 	d := NewDocket()
-	d.AddTask("Task 1")
-	d.AddTask("Task 2")
-	d.AddTask("Task 3")
+	d.AddTask("Task 1", "")
+	d.AddTask("Task 2", "")
+	d.AddTask("Task 3", "")
 
 	// タスクを削除
 	deleted, ok := d.DeleteTask(2)
@@ -217,9 +217,9 @@ func TestDocket_EditTask(t *testing.T) {
 
 func TestDocket_ResetDocket(t *testing.T) {
 	d := NewDocket()
-	d.AddTask("Task 1")
-	d.AddTask("Task 2")
-	d.AddTask("Task 3")
+	d.AddTask("Task 1", "")
+	d.AddTask("Task 2", "")
+	d.AddTask("Task 3", "")
 
 	d.ResetDocket()
 
@@ -232,7 +232,7 @@ func TestDocket_ResetDocket(t *testing.T) {
 	}
 
 	// リセット後に追加したタスクが ID=1 から再採番されることを確認
-	newTask := d.AddTask("新タスク")
+	newTask := d.AddTask("新タスク", "")
 	if newTask.ID != 1 {
 		t.Errorf("After ResetDocket, first new task ID = %d, want 1", newTask.ID)
 	}
@@ -254,9 +254,9 @@ func TestDocket_ResetDocket_Empty(t *testing.T) {
 
 func TestDocket_DeleteAllTasks(t *testing.T) {
 	d := NewDocket()
-	d.AddTask("Task 1")
-	d.AddTask("Task 2")
-	d.AddTask("Task 3")
+	d.AddTask("Task 1", "")
+	d.AddTask("Task 2", "")
+	d.AddTask("Task 3", "")
 
 	expectedNextID := d.NextID // 4
 
@@ -271,7 +271,7 @@ func TestDocket_DeleteAllTasks(t *testing.T) {
 	}
 
 	// 削除後に追加したタスクが連番継続されることを確認
-	newTask := d.AddTask("継続タスク")
+	newTask := d.AddTask("継続タスク", "")
 	if newTask.ID != expectedNextID {
 		t.Errorf("After DeleteAllTasks, next task ID = %d, want %d", newTask.ID, expectedNextID)
 	}

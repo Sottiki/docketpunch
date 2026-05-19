@@ -22,13 +22,19 @@ var addCmd = &cobra.Command{
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		description := strings.Join(args, " ")
+		priority, _ := cmd.Flags().GetString("priority")
+
+		if priority != "" && priority != "high" && priority != "medium" && priority != "low" {
+			fmt.Printf("Invalid priority: %s. Use: high, medium, low\n", priority)
+			return
+		}
 
 		docket, err := storage.Load()
 		if err != nil {
 			log.Fatalf("Failed to load data: %v", err)
 		}
 
-		newTask := docket.AddTask(description)
+		newTask := docket.AddTask(description, priority)
 
 		if err := storage.Save(docket); err != nil {
 			log.Fatalf("Error saving storage: %v", err)
@@ -43,14 +49,5 @@ var addCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(addCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// addCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// addCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	addCmd.Flags().StringP("priority", "p", "", "優先度を設定 (high, medium, low)")
 }

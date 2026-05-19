@@ -7,8 +7,9 @@ type Task struct {
 	ID          int        `json:"id"`
 	Description string     `json:"description"`
 	Done        bool       `json:"done"`
+	Priority    string     `json:"priority,omitempty"`
 	CreatedAt   time.Time  `json:"created_at"`
-	CompletedAt *time.Time `json:"completed_at,omitempty"` // 🆕 完了時刻
+	CompletedAt *time.Time `json:"completed_at,omitempty"`
 }
 
 // 新しいタスクを作成するコンストラクタ関数

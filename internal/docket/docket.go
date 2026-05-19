@@ -20,8 +20,9 @@ func NewDocket() *Docket {
 	}
 }
 
-func (d *Docket) AddTask(description string) *task.Task {
+func (d *Docket) AddTask(description string, priority string) *task.Task {
 	newTask := task.NewTask(d.NextID, description)
+	newTask.Priority = priority
 	d.Tasks = append(d.Tasks, newTask)
 	d.NextID++
 	return newTask
