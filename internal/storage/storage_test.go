@@ -25,8 +25,8 @@ func TestSaveAndLoad(t *testing.T) {
 	defer withTempHome(t)()
 
 	d := docket.NewDocket()
-	d.AddTask("タスクA")
-	d.AddTask("タスクB")
+	d.AddTask("タスクA", "")
+	d.AddTask("タスクB", "")
 	d.PunchTask(1)
 
 	if err := Init(); err != nil {
@@ -86,7 +86,7 @@ func TestInit_Idempotent(t *testing.T) {
 
 	// ファイルを書き換えて中身を確認
 	d := docket.NewDocket()
-	d.AddTask("永続タスク")
+	d.AddTask("永続タスク", "")
 	if err := Save(d); err != nil {
 		t.Fatalf("Save() error: %v", err)
 	}
@@ -128,7 +128,7 @@ func TestSave_PersistsCompletedAt(t *testing.T) {
 	defer withTempHome(t)()
 
 	d := docket.NewDocket()
-	d.AddTask("完了タスク")
+	d.AddTask("完了タスク", "")
 	d.PunchTask(1)
 
 	if err := Init(); err != nil {

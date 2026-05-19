@@ -391,6 +391,60 @@ func TestEditCmd_MultiWordDescription(t *testing.T) {
 	}
 }
 
+// --- priority ---
+
+func TestAddCmd_WithPriority_ShowsInList(t *testing.T) {
+	withTempHome(t)
+
+	out := run("add", "--priority", "high", "重要タスク")
+
+	if !strings.Contains(out, "[high]") {
+		t.Errorf("add --priority high should show [high] in output, got: %s", out)
+	}
+}
+
+func TestAddCmd_WithPriority_InvalidValue(t *testing.T) {
+	withTempHome(t)
+
+	out := run("add", "--priority", "urgent", "タスク")
+
+	if !strings.Contains(out, "Invalid priority") {
+		t.Errorf("invalid priority should show error, got: %s", out)
+	}
+}
+
+func TestListCmd_PriorityFilter(t *testing.T) {
+	withTempHome(t)
+
+	run("add", "--priority", "high", "高優先タスク")
+	run("add", "--priority", "low", "低優先タスク")
+	run("add", "優先度なし")
+
+	out := run("list", "--priority", "high")
+
+	if !strings.Contains(out, "高優先タスク") {
+		t.Errorf("--priority high should show high priority task, got: %s", out)
+	}
+	if strings.Contains(out, "低優先タスク") {
+		t.Errorf("--priority high should not show low priority task, got: %s", out)
+	}
+	if strings.Contains(out, "優先度なし") {
+		t.Errorf("--priority high should not show task with no priority, got: %s", out)
+	}
+}
+
+func TestListCmd_PriorityFilter_NoMatch(t *testing.T) {
+	withTempHome(t)
+
+	run("add", "優先度なし")
+
+	out := run("list", "--priority", "high")
+
+	if !strings.Contains(out, "No tasks found") {
+		t.Errorf("--priority filter with no matches should show 'No tasks found', got: %s", out)
+	}
+}
+
 // --- stderr を捨てる helper（log.Fatalf による os.Exit を回避するためテストは正常系のみ） ---
 
 func init() {

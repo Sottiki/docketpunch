@@ -24,5 +24,9 @@ func formatTaskAsTicket(t *task.Task) string {
 	} else {
 		dateInfo = fmt.Sprintf("(%s)", createDate)
 	}
+
+	if t.Priority != "" {
+		return fmt.Sprintf("[ %s|#%d|%s [%s] %s]", statusMark, t.ID, t.Description, t.Priority, dateInfo)
+	}
 	return fmt.Sprintf("[ %s|#%d|%s %s]", statusMark, t.ID, t.Description, dateInfo)
 }
