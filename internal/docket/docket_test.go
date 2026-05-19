@@ -184,8 +184,8 @@ func TestDocket_DeleteTask(t *testing.T) {
 
 func TestDocket_EditTask(t *testing.T) {
 	d := NewDocket()
-	d.AddTask("Task 1")
-	d.AddTask("Task 2")
+	d.AddTask("Task 1", "")
+	d.AddTask("Task 2", "")
 
 	edited, ok := d.EditTask(1, "Updated task")
 
