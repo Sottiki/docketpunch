@@ -14,7 +14,6 @@ var (
 	priorityHigh   = color.New(color.FgRed, color.Bold).SprintFunc()
 	priorityMedium = color.New(color.FgHiGreen).SprintFunc()
 	priorityLow    = color.New(color.FgCyan).SprintFunc()
-	punchMark = color.New(color.FgGreen, color.Bold).SprintFunc()
 )
 
 func formatTaskAsTicket(t *task.Task) string {
@@ -32,7 +31,7 @@ func formatTaskAsTicket(t *task.Task) string {
 		if t.Priority != "" {
 			priorityTag = fmt.Sprintf("[%s] ", t.Priority)
 		}
-		return fmt.Sprintf("[ %s|#%d|%s %s%s]", punchMark("o"), t.ID, t.Description, priorityTag, dateInfo)
+		return fmt.Sprintf("[ o|#%d|%s %s%s]", t.ID, t.Description, priorityTag, dateInfo)
 	}
 
 	var priorityTag string
