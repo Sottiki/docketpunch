@@ -28,21 +28,26 @@ func formatTaskAsTicket(t *task.Task) string {
 			dateInfo = fmt.Sprintf("(%s)", createDate)
 		}
 		var priorityTag string
-		if t.Priority != "" {
-			priorityTag = fmt.Sprintf("[%s] ", t.Priority)
+		switch t.Priority {
+		case "high":
+			priorityTag = "[HIG] "
+		case "medium":
+			priorityTag = "[MED] "
+		case "low":
+			priorityTag = "[LOW] "
 		}
-		return fmt.Sprintf("[ o|#%d|%s %s%s]", t.ID, t.Description, priorityTag, dateInfo)
+		return fmt.Sprintf("[ o |#%d| %s %s%s]", t.ID, t.Description, priorityTag, dateInfo)
 	}
 
 	var priorityTag string
 	switch t.Priority {
 	case "high":
-		priorityTag = priorityHigh("[high]") + " "
+		priorityTag = priorityHigh("[HIG]") + " "
 	case "medium":
-		priorityTag = priorityMedium("[medium]") + " "
+		priorityTag = priorityMedium("[MED]") + " "
 	case "low":
-		priorityTag = priorityLow("[low]") + " "
+		priorityTag = priorityLow("[LOW]") + " "
 	}
 	dateInfo := fmt.Sprintf("(%s)", createDate)
-	return fmt.Sprintf("[  |#%d|%s %s%s]", t.ID, t.Description, priorityTag, dateInfo)
+	return fmt.Sprintf("[   |#%d| %s %s%s]", t.ID, t.Description, priorityTag, dateInfo)
 }

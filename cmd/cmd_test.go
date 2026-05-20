@@ -398,8 +398,8 @@ func TestAddCmd_WithPriority_ShowsInList(t *testing.T) {
 
 	out := run("add", "--priority", "high", "重要タスク")
 
-	if !strings.Contains(out, "[high]") {
-		t.Errorf("add --priority high should show [high] in output, got: %s", out)
+	if !strings.Contains(out, "[HIG]") {
+		t.Errorf("add --priority high should show [HIG] in output, got: %s", out)
 	}
 }
 
@@ -408,8 +408,8 @@ func TestAddCmd_WithPriorityMedium_ShowsInList(t *testing.T) {
 
 	out := run("add", "--priority", "medium", "中優先タスク")
 
-	if !strings.Contains(out, "[medium]") {
-		t.Errorf("add --priority medium should show [medium] in output, got: %s", out)
+	if !strings.Contains(out, "[MED]") {
+		t.Errorf("add --priority medium should show [MED] in output, got: %s", out)
 	}
 }
 
@@ -418,8 +418,8 @@ func TestAddCmd_WithPriorityLow_ShowsInList(t *testing.T) {
 
 	out := run("add", "--priority", "low", "低優先タスク")
 
-	if !strings.Contains(out, "[low]") {
-		t.Errorf("add --priority low should show [low] in output, got: %s", out)
+	if !strings.Contains(out, "[LOW]") {
+		t.Errorf("add --priority low should show [LOW] in output, got: %s", out)
 	}
 }
 
