@@ -7,26 +7,47 @@ import (
 	"fmt"
 
 	"github.com/Sottiki/docketpunch/internal/task"
+	"github.com/fatih/color"
+)
+
+var (
+	priorityHigh   = color.New(color.FgRed, color.Bold).SprintFunc()
+	priorityMedium = color.New(color.FgHiGreen).SprintFunc()
+	priorityLow    = color.New(color.FgCyan).SprintFunc()
 )
 
 func formatTaskAsTicket(t *task.Task) string {
-	statusMark := " "
-	if t.Done {
-		statusMark = "o"
-	}
-
 	createDate := t.CreatedAt.Format("01/02")
 
-	var dateInfo string
-	if t.Done && t.CompletedAt != nil {
-		completeDate := t.CompletedAt.Format("01/02")
-		dateInfo = fmt.Sprintf("(%s→%s)", createDate, completeDate)
-	} else {
-		dateInfo = fmt.Sprintf("(%s)", createDate)
+	if t.Done {
+		var dateInfo string
+		if t.CompletedAt != nil {
+			completeDate := t.CompletedAt.Format("01/02")
+			dateInfo = fmt.Sprintf("(%s→%s)", createDate, completeDate)
+		} else {
+			dateInfo = fmt.Sprintf("(%s)", createDate)
+		}
+		var priorityTag string
+		switch t.Priority {
+		case "high":
+			priorityTag = "[HIG] "
+		case "medium":
+			priorityTag = "[MED] "
+		case "low":
+			priorityTag = "[LOW] "
+		}
+		return fmt.Sprintf("[ o |#%d| %s %s%s]", t.ID, t.Description, priorityTag, dateInfo)
 	}
 
-	if t.Priority != "" {
-		return fmt.Sprintf("[ %s|#%d|%s [%s] %s]", statusMark, t.ID, t.Description, t.Priority, dateInfo)
+	var priorityTag string
+	switch t.Priority {
+	case "high":
+		priorityTag = priorityHigh("[HIG]") + " "
+	case "medium":
+		priorityTag = priorityMedium("[MED]") + " "
+	case "low":
+		priorityTag = priorityLow("[LOW]") + " "
 	}
-	return fmt.Sprintf("[ %s|#%d|%s %s]", statusMark, t.ID, t.Description, dateInfo)
+	dateInfo := fmt.Sprintf("(%s)", createDate)
+	return fmt.Sprintf("[   |#%d| %s %s%s]", t.ID, t.Description, priorityTag, dateInfo)
 }
