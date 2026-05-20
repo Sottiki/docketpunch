@@ -403,6 +403,26 @@ func TestAddCmd_WithPriority_ShowsInList(t *testing.T) {
 	}
 }
 
+func TestAddCmd_WithPriorityMedium_ShowsInList(t *testing.T) {
+	withTempHome(t)
+
+	out := run("add", "--priority", "medium", "中優先タスク")
+
+	if !strings.Contains(out, "[medium]") {
+		t.Errorf("add --priority medium should show [medium] in output, got: %s", out)
+	}
+}
+
+func TestAddCmd_WithPriorityLow_ShowsInList(t *testing.T) {
+	withTempHome(t)
+
+	out := run("add", "--priority", "low", "低優先タスク")
+
+	if !strings.Contains(out, "[low]") {
+		t.Errorf("add --priority low should show [low] in output, got: %s", out)
+	}
+}
+
 func TestAddCmd_WithPriority_InvalidValue(t *testing.T) {
 	withTempHome(t)
 
