@@ -423,6 +423,35 @@ func TestAddCmd_WithPriorityLow_ShowsInList(t *testing.T) {
 	}
 }
 
+func TestFormatTaskAsTicket_PriorityBeforeDescription(t *testing.T) {
+	withTempHome(t)
+
+	run("add", "--priority", "high", "重要タスク")
+	out := run("list")
+
+	// [HIG] が # より後、説明文より前に来ることを確認
+	higIdx := strings.Index(out, "[HIG]")
+	idIdx := strings.Index(out, "#1")
+	descIdx := strings.Index(out, "重要タスク")
+	if higIdx == -1 || idIdx == -1 || descIdx == -1 {
+		t.Fatalf("expected [HIG], #1, 重要タスク in output, got: %s", out)
+	}
+	if !(idIdx < higIdx && higIdx < descIdx) {
+		t.Errorf("priority tag should appear between ID and description, got: %s", out)
+	}
+}
+
+func TestFormatTaskAsTicket_NoPriority_ShowsDash(t *testing.T) {
+	withTempHome(t)
+
+	run("add", "優先度なしタスク")
+	out := run("list")
+
+	if !strings.Contains(out, "[ - ]") {
+		t.Errorf("task without priority should show [ - ], got: %s", out)
+	}
+}
+
 func TestAddCmd_WithPriority_InvalidValue(t *testing.T) {
 	withTempHome(t)
 
