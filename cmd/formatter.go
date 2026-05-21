@@ -16,8 +16,22 @@ var (
 	priorityLow    = color.New(color.FgCyan).SprintFunc()
 )
 
+func priorityTag(priority string) string {
+	switch priority {
+	case "high":
+		return priorityHigh("[HIG]")
+	case "medium":
+		return priorityMedium("[MED]")
+	case "low":
+		return priorityLow("[LOW]")
+	default:
+		return "[ - ]"
+	}
+}
+
 func formatTaskAsTicket(t *task.Task) string {
 	createDate := t.CreatedAt.Format("01/02")
+	tag := priorityTag(t.Priority)
 
 	if t.Done {
 		var dateInfo string
@@ -27,27 +41,9 @@ func formatTaskAsTicket(t *task.Task) string {
 		} else {
 			dateInfo = fmt.Sprintf("(%s)", createDate)
 		}
-		var priorityTag string
-		switch t.Priority {
-		case "high":
-			priorityTag = "[HIG] "
-		case "medium":
-			priorityTag = "[MED] "
-		case "low":
-			priorityTag = "[LOW] "
-		}
-		return fmt.Sprintf("[ o |#%d| %s %s%s]", t.ID, t.Description, priorityTag, dateInfo)
+		return fmt.Sprintf("[ o |#%d|%s| %s %s]", t.ID, tag, t.Description, dateInfo)
 	}
 
-	var priorityTag string
-	switch t.Priority {
-	case "high":
-		priorityTag = priorityHigh("[HIG]") + " "
-	case "medium":
-		priorityTag = priorityMedium("[MED]") + " "
-	case "low":
-		priorityTag = priorityLow("[LOW]") + " "
-	}
 	dateInfo := fmt.Sprintf("(%s)", createDate)
-	return fmt.Sprintf("[   |#%d| %s %s%s]", t.ID, t.Description, priorityTag, dateInfo)
+	return fmt.Sprintf("[   |#%d|%s| %s %s]", t.ID, tag, t.Description, dateInfo)
 }

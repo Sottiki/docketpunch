@@ -23,6 +23,7 @@ var addCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		description := strings.Join(args, " ")
 		priority, _ := cmd.Flags().GetString("priority")
+		defer func() { _ = cmd.Flags().Set("priority", "") }()
 
 		if priority != "" && priority != "high" && priority != "medium" && priority != "low" {
 			fmt.Printf("Invalid priority: %s. Use: high, medium, low\n", priority)
