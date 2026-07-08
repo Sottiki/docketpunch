@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>docketpunch プロジェクト概要</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif; max-width: 960px; margin: 2em auto; padding: 0 1em; line-height: 1.6; color: #24292e; }
+  h1, h2, h3 { border-bottom: 1px solid #eaecef; padding-bottom: 0.3em; }
+  h1 { font-size: 2em; }
+  h2 { font-size: 1.5em; margin-top: 1.5em; }
+  h3 { font-size: 1.2em; border-bottom: none; }
+  code { background: #f6f8fa; padding: 0.2em 0.4em; border-radius: 3px; font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 85%; }
+  pre { background: #f6f8fa; padding: 1em; border-radius: 6px; overflow-x: auto; }
+  pre code { background: none; padding: 0; }
+  table { border-collapse: collapse; margin: 1em 0; width: 100%; }
+  th, td { border: 1px solid #dfe2e5; padding: 6px 13px; text-align: left; }
+  th { background: #f6f8fa; }
+  hr { border: 0; border-top: 1px solid #eaecef; margin: 2em 0; }
+  blockquote { color: #6a737d; border-left: 0.25em solid #dfe2e5; padding: 0 1em; margin: 0; }
+  a { color: #0366d6; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<h1>docketpunch プロジェクト概要</h1>
+
+<blockquote>最終更新: 2026-05-21</blockquote>
+
+<h2>プロジェクト概要</h2>
+
+<p>レトロなパンチカードをイメージした Go 製 CLI タスク管理ツール。<br>
+タスクを完了するたびにパンチカードに穴を開けるような爽快感を提供する。</p>
+
+<ul>
+  <li><strong>言語</strong>: Go 1.23+ (go.mod は 1.25.1)</li>
+  <li><strong>CLI フレームワーク</strong>: <a href="https://github.com/spf13/cobra">Cobra</a> v1.10.1</li>
+  <li><strong>カラー出力</strong>: <a href="https://github.com/fatih/color">fatih/color</a> v1.19.0</li>
+  <li><strong>データ保存先</strong>: <code>~/.docket/tasks.json</code> (JSON)</li>
+  <li><strong>リポジトリ</strong>: <a href="https://github.com/Sottiki/docketpunch">https://github.com/Sottiki/docketpunch</a></li>
+</ul>
+
+<hr>
+
+<h2>プロジェクト構造</h2>
+
+<pre><code>docketpunch/
+├── main.go
+├── cmd/
+│   ├── root.go          # ルートコマンド・ウェルカム画面・--version フラグ
+│   ├── add.go           # add コマンド (--priority フラグあり)
+│   ├── list.go          # list コマンド (--done / --pending / --priority フラグあり)
+│   ├── edit.go          # edit コマンド (説明文編集)
+│   ├── punch.go         # punch コマンド
+│   ├── delete.go        # delete コマンド (--all フラグあり)
+│   ├── clear.go         # clear コマンド (完全リセット)
+│   ├── formatter.go     # formatTaskAsTicket() / priorityTag() ヘルパー
+│   └── cmd_test.go      # コマンド統合テスト
+├── internal/
+│   ├── task/
+│   │   ├── task.go
+│   │   └── task_test.go
+│   ├── docket/
+│   │   ├── docket.go
+│   │   └── docket_test.go
+│   └── storage/
+│       ├── storage.go
+│       └── storage_test.go
+├── .github/
+│   ├── ISSUE_TEMPLATE/
+│   │   ├── bug_report.md
+│   │   └── feature_request.md
+│   ├── PULL_REQUEST_TEMPLATE.md
+│   └── workflows/
+│       ├── ci.yml        # CI: main への PR・マージ時にテスト & ビルド
+│       └── release.yml   # リリース: タグプッシュ時にバイナリ配布
+├── go.mod
+├── go.sum
+├── README.md
+├── OVERVIEW.md
+└── requirements.md
+</code></pre>
+
+<hr>
+
+<h2>データモデル</h2>
+
+<h3>Task 構造体 (<code>internal/task/task.go</code>)</h3>
+
+<table>
+  <thead>
+    <tr><th>フィールド</th><th>型</th><th>JSON キー</th><th>説明</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>ID</td><td>int</td><td><code>id</code></td><td>自動採番 (1始まり)</td></tr>
+    <tr><td>Description</td><td>string</td><td><code>description</code></td><td>タスクの説明文</td></tr>
+    <tr><td>Done</td><td>bool</td><td><code>done</code></td><td>完了フラグ</td></tr>
+    <tr><td>Priority</td><td>string</td><td><code>priority</code></td><td>優先度 high / medium / low (省略時 omitempty)</td></tr>
+    <tr><td>CreatedAt</td><td>time.Time</td><td><code>created_at</code></td><td>作成日時</td></tr>
+    <tr><td>CompletedAt</td><td>*time.Time</td><td><code>completed_at</code></td><td>完了日時 (未完了時は omitempty)</td></tr>
+  </tbody>
+</table>
+
+<h3>Docket 構造体 (<code>internal/docket/docket.go</code>)</h3>
+
+<table>
+  <thead>
+    <tr><th>フィールド</th><th>型</th><th>JSON キー</th><th>説明</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Tasks</td><td>[]*Task</td><td><code>tasks</code></td><td>タスク一覧</td></tr>
+    <tr><td>NextID</td><td>int</td><td><code>next_id</code></td><td>次に割り当てる ID (自動採番)</td></tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h2>実装済みコマンド</h2>
+
+<h3><code>docket add &lt;description&gt; [--priority &lt;level&gt;]</code></h3>
+<ul>
+  <li>新規タスクを追加し、追加後の全タスク一覧を表示</li>
+  <li><code>--priority</code> / <code>-p</code>: <code>high</code> / <code>medium</code> / <code>low</code> を指定可能</li>
+  <li><strong>制約</strong>: 引数は必ず1つ (<code>cobra.ExactArgs(1)</code>)</li>
+</ul>
+
+<h3><code>docket list [--done | --pending] [--priority &lt;level&gt;]</code></h3>
+<ul>
+  <li>全タスクをチケット形式で表示</li>
+  <li>フォーマット: <code>[   |#ID|[TAG]| 説明 (作成月/日)]</code> / <code>[ o |#ID|[TAG]| 説明 (作成月/日→完了月/日)]</code></li>
+  <li>優先度タグ: <code>[HIG]</code> (赤・太字) / <code>[MED]</code> (ライトグリーン) / <code>[LOW]</code> (シアン) / <code>[ - ]</code> (なし)</li>
+  <li><code>--done</code>: 完了タスクのみ / <code>--pending</code>: 未完了タスクのみ</li>
+  <li><code>--priority</code>: 優先度でフィルタ</li>
+  <li>タスクがなければ <code>"No tasks found"</code> を表示</li>
+</ul>
+
+<h3><code>docket edit &lt;task-id&gt; &lt;description&gt;</code></h3>
+<ul>
+  <li>指定 ID のタスクの説明文を編集し、編集後の全タスク一覧を表示</li>
+  <li>複数語のスペース区切り引数も連結して扱う</li>
+</ul>
+
+<h3><code>docket punch [task-id]</code></h3>
+<ul>
+  <li><strong>引数なし</strong>: 最新の未完了タスクを完了</li>
+  <li><strong>引数あり</strong>: 指定 ID のタスクを完了</li>
+  <li>完了後に全タスク一覧を表示</li>
+  <li><strong>制約</strong>: 引数は最大1つ (<code>cobra.MaximumNArgs(1)</code>)</li>
+</ul>
+
+<h3><code>docket delete &lt;task-id&gt; / --all</code></h3>
+<ul>
+  <li><code>delete &lt;id&gt;</code>: 指定 ID のタスクを削除</li>
+  <li><code>delete --all</code>: 全タスク削除（NextID は維持）</li>
+</ul>
+
+<h3><code>docket clear</code></h3>
+<ul>
+  <li>全タスク削除 + NextID を 1 にリセット</li>
+  <li><strong>制約</strong>: 引数なし (<code>cobra.NoArgs</code>)</li>
+</ul>
+
+<h3><code>docket</code> / <code>docket --version</code></h3>
+<ul>
+  <li>ウェルカム画面を表示 (ASCII アート + バージョン番号)</li>
+</ul>
+
+<hr>
+
+<h2>ビジネスロジック (<code>internal/docket/docket.go</code>)</h2>
+
+<table>
+  <thead>
+    <tr><th>メソッド</th><th>処理内容</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>NewDocket()</code></td><td>空の Docket を初期化 (NextID=1)</td></tr>
+    <tr><td><code>AddTask(description, priority)</code></td><td>新タスク追加・NextID インクリメント</td></tr>
+    <tr><td><code>EditTask(id, newDescription)</code></td><td>指定 ID のタスクの説明文を更新</td></tr>
+    <tr><td><code>PunchTask(id)</code></td><td>指定 ID の未完了タスクを完了</td></tr>
+    <tr><td><code>GetLatestIncompleteTask()</code></td><td>逆順スキャンして最新未完了を返す</td></tr>
+    <tr><td><code>DeleteTask(id)</code></td><td>指定 ID のタスクをスライスから削除</td></tr>
+    <tr><td><code>DeleteAllTasks()</code></td><td>全タスク削除 (NextID 維持)</td></tr>
+    <tr><td><code>ResetDocket()</code></td><td>全タスク削除 + NextID=1 にリセット</td></tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h2>ストレージ (<code>internal/storage/storage.go</code>)</h2>
+
+<ul>
+  <li><strong>ファイルパス</strong>: <code>~/.docket/tasks.json</code></li>
+  <li><strong><code>Init()</code></strong>: ディレクトリ作成 + ファイル未存在時は空の Docket を保存</li>
+  <li><strong><code>Save(d)</code></strong>: <code>json.MarshalIndent</code> でインデント付き JSON 書き込み</li>
+  <li><strong><code>Load()</code></strong>: <code>Init()</code> 呼び出し後に JSON 読み込み・パース</li>
+</ul>
+
+<hr>
+
+<h2>テスト</h2>
+
+<table>
+  <thead>
+    <tr><th>パッケージ</th><th>テスト内容</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>internal/task</code></td><td><code>NewTask()</code>, 初期状態</td></tr>
+    <tr><td><code>internal/docket</code></td><td><code>NewDocket</code>, <code>AddTask</code>, <code>EditTask</code>, <code>PunchTask</code>, <code>GetLatestIncompleteTask</code>, <code>DeleteTask</code>, <code>ResetDocket</code>, <code>DeleteAllTasks</code></td></tr>
+    <tr><td><code>internal/storage</code></td><td><code>Save</code>/<code>Load</code> 往復, <code>Init</code> 冪等性, 不正 JSON エラー, <code>CompletedAt</code> 永続化, JSON フォーマット</td></tr>
+    <tr><td><code>cmd</code></td><td>各コマンドの正常系・異常系 35ケース（os.Pipe で stdout キャプチャ、一時 HOME で分離）</td></tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h2>CI/CD</h2>
+
+<h3>CI (<code>.github/workflows/ci.yml</code>)</h3>
+<ul>
+  <li><strong>トリガー</strong>: main への PR 作成・更新時 / main へのマージ時</li>
+  <li><strong>ジョブ</strong>: テスト (<code>-race</code>) → ビルド（test 成功後）</li>
+</ul>
+
+<h3>Release (<code>.github/workflows/release.yml</code>)</h3>
+<ul>
+  <li><strong>トリガー</strong>: <code>v*.*.*</code> タグのプッシュ</li>
+  <li><strong>成果物</strong>: Linux amd64 / arm64 バイナリ + GitHub Release</li>
+  <li><strong>制限</strong>: macOS・Windows バイナリは未対応（<code>go install</code> で代替）</li>
+</ul>
+
+</body>
+</html>

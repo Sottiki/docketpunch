@@ -45,3 +45,17 @@ internal/
 
 `~/.docket/tasks.json` に保存。`priority` フィールドは省略可能（`omitempty`）。
 既存データとの後方互換性あり（priority なしのデータはそのまま動作する）。
+
+## gh コマンドの使い方
+
+- 許可される操作:
+  - 基本的な読み取り操作（`gh pr view`, `gh pr list`, `gh issue view`, `gh issue list`, `gh repo view` など）
+  - PR の作成（`gh pr create`）
+  - コミットの作成（`git commit`）
+  - Issue の作成（`gh issue create`）
+- 禁止される操作:
+  - PR のマージ（`gh pr merge`）は絶対に行わない。マージは必ずユーザーが手動で実施する
+  - シークレットや認証情報などセキュアな値・設定の参照は絶対しない。（`gh secret`, `gh auth token` など）
+
+## ドキュメントの出力について
+Readme.md以外のドキュメントファイルはmd形式ではなくHTML形式で出力して下さい。

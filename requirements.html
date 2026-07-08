@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>docketpunch 実装要件・TODO</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif; max-width: 960px; margin: 2em auto; padding: 0 1em; line-height: 1.6; color: #24292e; }
+  h1, h2, h3 { border-bottom: 1px solid #eaecef; padding-bottom: 0.3em; }
+  h1 { font-size: 2em; }
+  h2 { font-size: 1.5em; margin-top: 1.5em; }
+  h3 { font-size: 1.2em; border-bottom: none; }
+  code { background: #f6f8fa; padding: 0.2em 0.4em; border-radius: 3px; font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 85%; }
+  pre { background: #f6f8fa; padding: 1em; border-radius: 6px; overflow-x: auto; }
+  pre code { background: none; padding: 0; }
+  table { border-collapse: collapse; margin: 1em 0; width: 100%; }
+  th, td { border: 1px solid #dfe2e5; padding: 6px 13px; text-align: left; }
+  th { background: #f6f8fa; }
+  hr { border: 0; border-top: 1px solid #eaecef; margin: 2em 0; }
+  blockquote { color: #6a737d; border-left: 0.25em solid #dfe2e5; padding: 0 1em; margin: 0; }
+  ul.todo { list-style: none; padding-left: 0; }
+  ul.todo li { padding-left: 1.5em; position: relative; }
+  ul.todo li::before { content: "☑"; position: absolute; left: 0; color: #28a745; }
+</style>
+</head>
+<body>
+
+<h1>docketpunch 実装要件・TODO</h1>
+
+<blockquote>最終更新: 2026-05-21</blockquote>
+
+<h2>完了済み TODO</h2>
+
+<ul class="todo">
+  <li><code>internal/storage</code> テスト追加 (PR #16)</li>
+  <li><code>internal/docket</code> に <code>ResetDocket</code> / <code>DeleteAllTasks</code> のメソッドとテスト追加 (PR #17)</li>
+  <li><code>clear</code> コマンドを JSON 完全リセットに変更（全タスク削除 + NextID=1）(PR #18)</li>
+  <li><code>delete --all</code> オプションを追加（全タスク削除・NextID はリセットしない）(PR #19)</li>
+  <li><code>createSampleData()</code> を削除・初回起動時は空の Docket で開始 (PR #20)</li>
+  <li>著作権ヘッダを修正 (PR #20)</li>
+  <li><code>list</code> コマンドの未完了タスク日付表示を修正: <code>(01/02→)</code> → <code>(01/02)</code> (PR #21)</li>
+  <li><code>punch</code> 実行後にタスク一覧を表示 (PR #22)</li>
+  <li><code>formatTaskAsTicket</code> を <code>cmd/formatter.go</code> に分離 (PR #23)</li>
+  <li><code>cmd/</code> 統合テスト追加 (PR #24)</li>
+  <li>GitHub Actions CI ワークフロー追加 (PR #25)</li>
+  <li>README を最新実装に合わせて更新</li>
+  <li><code>ClearCompletedTasks</code> デッドコード削除 (PR #26)</li>
+  <li>完了マークを <code>◯</code> → <code>o</code> に変更（Windows 文字化け対応）(PR #27)</li>
+  <li><code>list --done</code> / <code>list --pending</code> フィルタフラグを追加 (PR #28)</li>
+  <li><code>edit &lt;id&gt; &lt;新しい説明&gt;</code> コマンドを追加 (PR #29)</li>
+  <li>タスク優先度 high/medium/low を追加（<code>add --priority</code>、<code>list --priority</code>）</li>
+  <li>カラー出力を追加（<code>fatih/color</code>）</li>
+  <li>優先度タグを固定長3文字表示に変更（<code>[HIG]</code> / <code>[MED]</code> / <code>[LOW]</code>）</li>
+  <li>優先度タグの表示位置を ID 直後に移動・優先度なしタスクは <code>[ - ]</code> 表示</li>
+  <li>Issue / PR テンプレートを追加</li>
+</ul>
+
+<hr>
+
+<h2>コマンド設計まとめ（現在）</h2>
+
+<table>
+  <thead>
+    <tr><th>コマンド</th><th>動作</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>add &lt;description&gt;</code></td><td>新規タスクを追加（追加後に一覧表示）</td></tr>
+    <tr><td><code>add --priority &lt;level&gt;</code></td><td>優先度付きでタスクを追加（high / medium / low）</td></tr>
+    <tr><td><code>list</code></td><td>全タスクをチケット形式で表示</td></tr>
+    <tr><td><code>list --done</code></td><td>完了済みタスクのみ表示</td></tr>
+    <tr><td><code>list --pending</code></td><td>未完了タスクのみ表示</td></tr>
+    <tr><td><code>list --priority &lt;level&gt;</code></td><td>優先度でフィルタ表示</td></tr>
+    <tr><td><code>edit &lt;id&gt; &lt;description&gt;</code></td><td>指定 ID のタスクの説明文を編集</td></tr>
+    <tr><td><code>punch [id]</code></td><td>引数なし: 最新未完了を完了 / 引数あり: 指定 ID を完了（完了後に一覧表示）</td></tr>
+    <tr><td><code>delete &lt;id&gt;</code></td><td>指定 ID のタスクを削除</td></tr>
+    <tr><td><code>delete --all</code></td><td>全タスク削除（NextID はリセットしない）</td></tr>
+    <tr><td><code>clear</code></td><td>JSON を完全リセット（全タスク削除 + NextID=1）</td></tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h2>表示フォーマット</h2>
+
+<pre><code>[   |#1|[ - ]| 優先度なしタスク (05/21)]
+[   |#2|[HIG]| 重要タスク (05/21)]
+[ o |#3|[MED]| 完了タスク (05/01→05/21)]
+</code></pre>
+
+<ul>
+  <li>優先度タグはタスク番号の直後に配置（固定長3文字）</li>
+  <li><code>[HIG]</code> 赤・太字 / <code>[MED]</code> ライトグリーン / <code>[LOW]</code> シアン</li>
+  <li>優先度なしは <code>[ - ]</code></li>
+  <li>完了マーク <code>o</code> は ID 列の左側に配置</li>
+</ul>
+
+<hr>
+
+<h2>エンハンス候補</h2>
+
+<h3>機能追加</h3>
+
+<table>
+  <thead>
+    <tr><th>優先度</th><th>機能</th><th>概要</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>低</td><td>優先度をびっくりマーク表示に変更</td><td><code>[!!!]</code> / <code>[!! ]</code> / <code>[!  ]</code> でレトロ感を強める案</td></tr>
+    <tr><td>低</td><td>macOS/Windows バイナリ</td><td>CI/CD でクロスプラットフォームビルドを追加</td></tr>
+    <tr><td>低</td><td>複数データファイル対応</td><td>プロジェクト別にタスクを分けて管理</td></tr>
+  </tbody>
+</table>
+
+</body>
+</html>
